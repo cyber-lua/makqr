@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Generate custom QR codes with unique colors and sizes. Create your own QR codes for URLs, texts, and more with MakQR.">
+    <meta name="keywords" content="QR code generator, custom QR code, generate QR code, QR code with colors, QR code">
+    <meta name="author" content="cyber-lua">
+    <meta property="og:title" content="MakQR">
+    <meta property="og:description" content="MakQR lets you create custom QR codes with colors and size options. Generate QR codes for URLs, text, and more.">
+    <meta property="og:image" content="favicon.png">
+    <meta name="twitter:title" content="MakQR">
+    <meta name="twitter:description" content="Create customized QR codes with your choice of colors, shapes, and sizes.">
+    <meta name="twitter:image" content="favicon.png">
+    <title>makqr</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 80%;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        label {
+            font-weight: bold;
+        }
+
+        input[type="text"], input[type="color"], select {
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        button {
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        #qr-result {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        #qr-container {
+            margin-top: 20px;
+            display: inline-block;
+        }
+
+        .download-buttons {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .download-buttons button {
+            background-color: #007BFF;
+            margin: 5px;
+        }
+
+        #qr-size {
+            width: 100px;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            font-size: 14px;
+            color: #777;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Custom QR Code Generator</h1>
+        <form id="qr-form">
+            <label for="qr-text">Enter Text or URL:</label>
+            <input type="text" id="qr-text" placeholder="Enter text or URL" required>
+
+            <label for="qr-color">QR Code Color:</label>
+            <input type="color" id="qr-color" value="#000000">
+
+            <label for="bg-color">Background Color:</label>
+            <input type="color" id="bg-color" value="#ffffff">
+
+            <label for="qr-size">QR Code Resolution (px):</label>
+            <input type="number" id="qr-size" value="500" min="100" max="1000">
+
+            <button type="submit">Generate QR Code</button>
+        </form>
+
+        <div id="qr-result">
+            <h2>Generated QR Code:</h2>
+            <div id="qr-container"></div>
+        </div>
+
+        <div class="download-buttons">
+            <button id="download-png" style="display:none;">Download PNG</button>
+        </div>
+    </div>
+
+    <footer>
+        Made by: <strong>cyber-lua</strong>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+    <script>
+        document.getElementById("qr-form").addEventListener("submit", function (event) {
+            event.preventDefault();
+
+            const qrText = document.getElementById("qr-text").value;
+            const qrColor = document.getElementById("qr-color").value;
+            const bgColor = document.getElementById("bg-color").value;
+            const qrSize = parseInt(document.getElementById("qr-size").value);
+
+            // Validate that text is entered
+            if (!qrText) {
+                alert("Please enter text or URL for the QR code.");
+                return;
+            }
+
+            // Clear previous QR code if any
+            const qrContainer = document.getElementById("qr-container");
+            qrContainer.innerHTML = "";
+
+            // Generate the QR code
+            QRCode.toDataURL(qrText, {
+                color: {
+                    dark: qrColor, // QR code color
+                    light: bgColor, // Background color
+                },
+                width: qrSize,
+                margin: 2,
+            }, function (error, url) {
+                if (error) {
+                    console.error(error);
+                    return;
+                }
+
+                // Create image element to display the QR code
+                const img = document.createElement("img");
+                img.src = url;
+                img.alt = "Generated QR Code";
+                img.width = qrSize;
+                img.height = qrSize;
+
+                qrContainer.appendChild(img);
+
+                // Show download buttons
+                document.getElementById("download-png").style.display = "inline-block";
+
+                // Handle PNG download
+                document.getElementById("download-png").addEventListener("click", function () {
+                    const link = document.createElement("a");
+                    link.href = url;
+                    link.download = "Generated.png";
+                    link.click();
+                });
+            });
+        });
+    </script>
+</body>
+</html>
